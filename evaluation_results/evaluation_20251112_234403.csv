@@ -1,0 +1,6 @@
+Test Number,Test Name,Success,Accuracy Score (%),Primary Mode Identified,Keyword Score (%),Metal Mentioned,Sources Found,Sources Sufficient,Response Length,Has Recommendations,Has Root Cause,Response Time (ms)
+1,Stress Corrosion Cracking (SCC),True,100.0,True,100.0,True,5,True,5921,True,True,21679
+2,Fatigue Failure,True,100.0,True,100.0,True,5,True,5881,True,True,15252
+3,High-Temperature Creep,True,100.0,True,100.0,True,5,True,5017,True,True,16341
+4,Pitting Corrosion,True,100.0,True,100.0,True,5,True,5029,True,True,16068
+5,Hydrogen Embrittlement,True,100.0,True,100.0,True,5,True,6045,True,True,17024

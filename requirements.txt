@@ -1,0 +1,24 @@
+Django==5.2.8
+django-tailwind==4.2.0
+requests==2.31.0
+
+# RAG Dependencies
+chromadb==0.5.15
+sentence-transformers==2.7.0
+pypdf==5.1.0
+numpy==1.26.4
+torch==2.4.1
+transformers==4.46.3
+
+# OCR Dependencies (for scanned PDFs)
+pytesseract==0.3.13
+pdf2image==1.17.0
+Pillow==10.4.0
+
+# Utilities
+python-dotenv==1.0.1
+tqdm==4.66.5
+
+# PDF Generation
+reportlab==4.2.5
+

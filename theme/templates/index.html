@@ -1,0 +1,1072 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AI Materials Copilot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% tailwind_css %}
+
+    <!-- NEW: KaTeX (for Math/LaTeX Formulas) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" xintegrity="sha384-Um5NbtnJMbA/AT+bB0RDBjK/sV1/BofC/fWpUvFh/ReRpKtxL/DkXmNfjIeHhVlX" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" xintegrity="sha384-7qcRyHjL0IqP6hI/NsdPgrM3XjGDEE0vicK/GGpS0bM36cM/5c/SwuR/ifG5U12t" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" xintegrity="sha384-4I4YLi4S/h1YS4fIdBwI/e/mM8ayLbbqSAYDjYxKWaB/omSSCtIYJdYWaQfXJ/CDISABLE" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    
+    <!-- NEW: marked.js (for Markdown to HTML) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        /* Smooth scrolling */
+        #message-list {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        #message-list::-webkit-scrollbar { 
+            width: 8px; 
+        }
+        #message-list::-webkit-scrollbar-track { 
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 4px;
+        }
+        #message-list::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg, #012B1B 0%, #024a2f 100%);
+            border-radius: 4px;
+        }
+        #message-list::-webkit-scrollbar-thumb:hover { 
+            background: linear-gradient(180deg, #024a2f 0%, #036b47 100%);
+        }
+        
+        /* Form input animations */
+        input, textarea {
+            transition: all 0.2s ease;
+        }
+        
+        input:focus, textarea:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(170, 243, 134, 0.3);
+        }
+        
+        /* Button animations */
+        button {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        /* Message animations */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .message-user {
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        .message-ai {
+            animation: slideInLeft 0.3s ease-out;
+        }
+        
+        /* Gradient backgrounds */
+        .gradient-header {
+            background: linear-gradient(135deg, #012B1B 0%, #024a2f 50%, #aaf386 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Pulse animation for loading */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Photo preview styles */
+        .photo-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-preview .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(239, 68, 68, 0.9);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .photo-preview .remove-btn:hover {
+            background: rgba(239, 68, 68, 1);
+            transform: scale(1.1);
+        }
+        
+        /* Download button styles */
+        .download-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        /* NEW: Styles for AI-generated HTML content */
+        .ai-message-content h1, 
+        .ai-message-content h2, 
+        .ai-message-content h3, 
+        .ai-message-content h4 {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            color: #93c5fd; /* blue-300 */
+        }
+        .ai-message-content ul, 
+        .ai-message-content ol {
+            list-style-position: inside;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            padding-left: 0;
+        }
+        .ai-message-content li {
+            margin-bottom: 5px;
+        }
+        .ai-message-content strong {
+            color: #f3f4f6; /* gray-100 */
+        }
+        .ai-message-content em {
+            color: #d1d5db; /* gray-300 */
+        }
+        
+        /* RAG Context Badge Styles */
+        .rag-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #93c5fd;
+        }
+        
+        .source-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: #86efac;
+            margin: 2px;
+        }
+        
+        .loading-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+        
+        .loading-step.active {
+            color: #60a5fa;
+        }
+        
+        .loading-step.completed {
+            color: #34d399;
+        }
+        
+        .spinner {
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100 leading-normal tracking-normal">
+    
+    {% csrf_token %}
+
+    <!-- Main container splits screen: Form on left, Chat on right -->
+    <div class="flex h-screen w-full">
+
+        <!-- Left Side: Input Form -->
+        <div class="w-full md:w-1/3 lg:w-2/5 0 border-r border-gray-700/50 p-6 flex flex-col h-screen shadow-2xl">
+            <header class="mb-6 pb-6 border-b border-gray-700/50">
+                <div class="flex items-center justify-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg">
+
+                    </div>
+                    <h1 class="text-3xl text-[#aaf386] md:text-4xl font-bold ">
+                        بصيرة (Baseera)
+                    </h1>
+                </div>
+                <p class="text-center text-gray-300 text-sm font-medium">AI Agent Materials Failure Analyst</p>
+                <div id="kb-stats" class="mt-3 text-center">
+                    {% if kb_documents > 0 %}
+                        <span id="kb-status" class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#012B1B]/20 border border-[#aaf386]/30 rounded-full text-xs text-[#aaf386]">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ kb_documents }} documents, {{ kb_chunks }} chunks
+                        </span>
+                    {% else %}
+                        <span id="kb-status" class="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-xs text-yellow-300">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Knowledge Base: Not initialized
+                        </span>
+                    {% endif %}
+                </div>
+            </header>
+            
+            <form id="analysis-form" class="flex-1 overflow-y-auto pr-2">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label for="metal_type" class="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                            <svg class="w-4 h-4 text-[#aaf386]" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                            </svg>
+                            Type of Metal
+                        </label>
+                        <input type="text" id="metal_type" placeholder="e.g., 316L Steel" class="block w-full bg-gray-800/50 border border-gray-600/50 text-white rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-[#aaf386] focus:border-[#aaf386] placeholder-gray-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="service_time" class="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                            <svg class="w-4 h-4 text-[#aaf386]" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                            Service Time
+                        </label>
+                        <input type="text" id="service_time" placeholder="e.g., 5 years" class="block w-full bg-gray-800/50 border border-gray-600/50 text-white rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-[#aaf386] focus:border-[#aaf386] placeholder-gray-500">
+                    </div>
+                </div>
+
+                <div class="mt-4 space-y-1">
+                    <label for="environment" class="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                        <svg class="w-4 h-4 text-[#aaf386]" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-4.306A4.5 4.5 0 1113.5 16h-8z"></path>
+                        </svg>
+                        Environment
+                    </label>
+                    <input type="text" id="environment" placeholder="e.g., High-chloride soil, sour gas" class="block w-full bg-gray-800/50 border border-gray-600/50 text-white rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-[#aaf386] focus:border-[#aaf386] placeholder-gray-500">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="space-y-1">
+                        <label for="temperature" class="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                            <svg class="w-4 h-4 text-[#aaf386]" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                            </svg>
+                            Temperature
+                        </label>
+                        <input type="text" id="temperature" placeholder="e.g., 80°C" class="block w-full bg-gray-800/50 border border-gray-600/50 text-white rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-[#aaf386] focus:border-[#aaf386] placeholder-gray-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="mechanical_load" class="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                            <svg class="w-4 h-4 text-[#aaf386]" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.198-.948 2.286-1.56.38-1.56 2.6 0 2.98a1.532 1.532 0 01.948 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.286.948c.38 1.56 2.6 1.56 2.98 0a1.533 1.533 0 012.287-.948c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.948-2.287c1.56-.38 1.56-2.6 0-2.98a1.532 1.532 0 01-.948-2.286c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.948zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                            </svg>
+                            Mechanical Load
+                        </label>
+                        <input type="text" id="mechanical_load" placeholder="e.g., High, Low, Cyclical" class="block w-full bg-gray-800/50 border border-gray-600/50 text-white rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-[#aaf386] focus:border-[#aaf386] placeholder-gray-500">
+                    </div>
+                </div>
+
+                <div class="mt-4 space-y-1">
+                    <label for="notes" class="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                        <svg class="w-4 h-4 text-[#aaf386]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Engineer Notes
+                    </label>
+                    <textarea id="notes" rows="6" placeholder="Describe the failure, appearance, location, etc..." class="block w-full bg-gray-800/50 border border-gray-600/50 text-white rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-[#aaf386] focus:border-[#aaf386] placeholder-gray-500 resize-none"></textarea>
+                </div>
+
+                <!-- Photo Upload Section -->
+                <div class="mt-4 space-y-2">
+                    <label for="photos" class="flex items-center gap-2 text-sm font-semibold text-gray-200">
+                        <svg class="w-4 h-4 text-[#aaf386]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                        </svg>
+                        Photos (Optional)
+                        <span class="text-xs text-gray-400 font-normal">- Upload failure images for visual analysis</span>
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="file" 
+                            id="photos" 
+                            name="photos" 
+                            multiple 
+                            accept="image/*"
+                            class="hidden"
+                            onchange="handlePhotoSelection(event)"
+                        >
+                        <label 
+                            for="photos" 
+                            id="photo-drop-zone"
+                            class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-600/50 rounded-lg cursor-pointer bg-gray-800/30 hover:bg-gray-800/50 hover:border-[#aaf386]/50 transition-colors"
+                            ondrop="handleDrop(event)" 
+                            ondragover="handleDragOver(event)"
+                            ondragleave="handleDragLeave(event)"
+                        >
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-400">
+                                    <span class="font-semibold">Click to upload</span> or drag and drop
+                                </p>
+                                <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB each</p>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- Photo Preview Container -->
+                    <div id="photo-preview-container" class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 hidden">
+                        <!-- Photo previews will be added here -->
+                    </div>
+                </div>
+
+                <div class="mt-6 sticky bottom-0 bg-gradient-to-t from-gray-900 via-gray-900 to-transparent pt-6 pb-2">
+                    <button 
+                        id="send-button"
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-[#012B1B] to-[#024a2f] hover:from-[#024a2f] hover:to-[#036b47] text-white font-bold py-3.5 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#aaf386] focus:ring-offset-2 focus:ring-offset-gray-900 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <svg id="send-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <span>Analyze Failure Case</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Side: Chat Window -->
+        <div class="w-full md:w-2/3 lg:w-3/5 bg-gradient-to-br from-gray-800 via-gray-850 to-gray-900 flex flex-col h-screen relative">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-700/50 bg-gray-800/50 backdrop-blur-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-[#012B1B] to-[#024a2f] rounded-full flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-100">Analysis Chat</h2>
+                        <p class="text-xs text-gray-400">Powered by RAG Technology</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Message List -->
+            <div id="message-list" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- AI Welcome Message -->
+                <div class="flex justify-start message-ai">
+                    <div class="bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl p-5 max-w-lg shadow-xl border border-gray-600/30 card-hover">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-8 h-8 bg-gradient-to-br from-[#012B1B] to-[#024a2f] rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <p class="font-semibold text-[#aaf386] text-sm">Welcome to Baseera</p>
+                        </div>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Please fill out the failure case file on the left.
+                            <br><br>
+                            I will search my knowledge base of <span class="text-[#aaf386] font-semibold">300+ technical documents</span>, analyze correlations, and provide a root cause analysis with recommendations.
+                            <br><br>
+                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-[#012B1B]/20 border border-[#aaf386]/30 rounded text-[#aaf386] text-xs font-medium">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                Powered by RAG
+                            </span>
+                            <br><br>
+                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-500/20 border border-green-500/30 rounded text-green-300 text-xs font-medium mt-2">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                                </svg>
+                                Photo Analysis Available
+                            </span>
+                            <br><br>
+                            My responses are informed by ASM Handbooks, CSB Reports, and Failure Analysis publications. You can also upload photos of the failure for visual analysis!
+                        </p>
+                    </div>
+                </div>
+                <!-- Messages will be added here by JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Constants ---
+        const analysisForm = document.getElementById('analysis-form');
+        const sendButton = document.getElementById('send-button');
+        const messageList = document.getElementById('message-list');
+        const photoInput = document.getElementById('photos');
+        const photoPreviewContainer = document.getElementById('photo-preview-container');
+        
+        // Store selected photos
+        let selectedPhotos = [];
+        
+        // Store last report data for PDF generation
+        let lastReportData = null;
+        
+        // --- Photo Upload Handler ---
+        function handlePhotoSelection(event) {
+            const files = Array.from(event.target.files);
+            
+            // Validate file size (10MB max per file)
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const validFiles = files.filter(file => {
+                if (file.size > maxSize) {
+                    alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+                    return false;
+                }
+                return true;
+            });
+            
+            // Limit to 5 photos
+            const remainingSlots = 5 - selectedPhotos.length;
+            const filesToAdd = validFiles.slice(0, remainingSlots);
+            
+            if (validFiles.length > remainingSlots) {
+                alert(`You can upload a maximum of 5 photos. Only the first ${remainingSlots} will be added.`);
+            }
+            
+            // Add files to selectedPhotos
+            filesToAdd.forEach(file => {
+                selectedPhotos.push(file);
+            });
+            
+            updatePhotoPreview();
+        }
+        
+        function removePhoto(index) {
+            selectedPhotos.splice(index, 1);
+            updatePhotoPreview();
+            // Reset file input
+            photoInput.value = '';
+        }
+        
+        function updatePhotoPreview() {
+            photoPreviewContainer.innerHTML = '';
+            
+            if (selectedPhotos.length === 0) {
+                photoPreviewContainer.classList.add('hidden');
+                return;
+            }
+            
+            photoPreviewContainer.classList.remove('hidden');
+            
+            selectedPhotos.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'photo-preview';
+                    previewDiv.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${index + 1}">
+                        <div class="remove-btn" onclick="removePhoto(${index})" title="Remove photo">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    `;
+                    photoPreviewContainer.appendChild(previewDiv);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Make removePhoto available globally
+        window.removePhoto = removePhoto;
+        
+        // --- Drag and Drop Handlers ---
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.currentTarget.classList.add('border-[#aaf386]', 'bg-gray-800/60');
+        }
+        
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.currentTarget.classList.remove('border-[#aaf386]', 'bg-gray-800/60');
+        }
+        
+        function handleDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.currentTarget.classList.remove('border-[#aaf386]', 'bg-gray-800/60');
+            
+            const files = Array.from(event.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+            if (files.length > 0) {
+                // Create a fake event object for handlePhotoSelection
+                const fakeEvent = {
+                    target: {
+                        files: files
+                    }
+                };
+                handlePhotoSelection(fakeEvent);
+            }
+        }
+        
+        // Make drag handlers available globally
+        window.handleDragOver = handleDragOver;
+        window.handleDragLeave = handleDragLeave;
+        window.handleDrop = handleDrop;
+        
+        // --- Django CSRF Token Helper ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        /**
+         * Main function to handle sending a message.
+         */
+        analysisForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Stop form from reloading page
+
+            // Disable UI
+            setUiLoading(true);
+
+            // 1. Collect all form data
+            const formData = {
+                service_time: document.getElementById('service_time').value,
+                environment: document.getElementById('environment').value,
+                metal_type: document.getElementById('metal_type').value,
+                temperature: document.getElementById('temperature').value,
+                mechanical_load: document.getElementById('mechanical_load').value,
+                notes: document.getElementById('notes').value,
+            };
+            
+            // 2. Convert photos to base64 if any are selected
+            const photosBase64 = [];
+            if (selectedPhotos.length > 0) {
+                for (const photo of selectedPhotos) {
+                    const base64 = await fileToBase64(photo);
+                    photosBase64.push({
+                        data: base64,
+                        mimeType: photo.type,
+                        name: photo.name
+                    });
+                }
+                formData.photos = photosBase64;
+            }
+
+            // 3. Display the user's submitted case (with photos if any)
+            displayUserMessage(formData, selectedPhotos.length > 0);
+            
+            // 4. Show a loading indicator in chat with RAG steps
+            const loadingIndicator = displayLoadingMessage();
+
+            try {
+                // 5. Get the AI response *from our own Django backend*
+                const responseData = await getAiResponseFromBackend(formData);
+                
+                // 6. Store report data for PDF generation
+                lastReportData = {
+                    failure_data: formData,
+                    ai_response: responseData.response,
+                    context_used: responseData.context_used,
+                    num_sources: responseData.num_sources,
+                    photos: formData.photos || []
+                };
+                
+                // 7. Remove loading and display AI message with RAG info
+                messageList.removeChild(loadingIndicator);
+                displayAiMessage(
+                    responseData.response, 
+                    responseData.context_used, 
+                    responseData.num_sources,
+                    responseData.report_available || false
+                );
+                
+                // 8. Clear photos after successful submission
+                selectedPhotos = [];
+                updatePhotoPreview();
+                photoInput.value = '';
+                
+                // 9. Reset form
+                analysisForm.reset();
+
+            } catch (error) {
+                // Handle errors
+                console.error("Error getting AI response:", error);
+                messageList.removeChild(loadingIndicator);
+                displayAiMessage(`Sorry, I encountered an error: ${error.message}. Please check the console.`);
+            } finally {
+                // Re-enable UI
+                setUiLoading(false);
+            }
+        });
+
+        /**
+         * Calls our Django backend API.
+         */
+        async function getAiResponseFromBackend(formData) {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken  // Include the CSRF token
+                },
+                body: JSON.stringify(formData) // Send the whole form object
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data; // Return full response object, not just response text
+        }
+
+        // --- UI Helper Functions ---
+
+        /**
+         * Disables/Enables the input and send button.
+         */
+        function setUiLoading(isLoading) {
+            sendButton.disabled = isLoading;
+            const sendIcon = document.getElementById('send-icon');
+            const buttonText = sendButton.querySelector('span');
+            
+            if(isLoading) {
+                sendButton.classList.add("opacity-75", "cursor-not-allowed");
+                sendIcon.classList.add("animate-spin");
+                sendIcon.innerHTML = '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>';
+                buttonText.textContent = "Analyzing...";
+            } else {
+                sendButton.classList.remove("opacity-75", "cursor-not-allowed");
+                sendIcon.classList.remove("animate-spin");
+                sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>';
+                buttonText.textContent = "Analyze Failure Case";
+            }
+        }
+
+        /**
+         * Converts a file to base64 string.
+         */
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Remove data:image/...;base64, prefix
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        /**
+         * Creates and displays the user's message bubble.
+         */
+        function displayUserMessage(data, hasPhotos = false) {
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'flex justify-end message-user';
+            
+            // Format the structured data as a "Case File" for the chat
+            let photosSection = '';
+            if (hasPhotos && data.photos) {
+                photosSection = `
+                    <div class="mt-3 pt-3 border-t border-white/20">
+                        <p class="text-[#aaf386] font-medium text-sm mb-2">Photos Attached: ${data.photos.length}</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            ${data.photos.map((photo, idx) => `
+                                <div class="relative rounded-lg overflow-hidden border border-white/20">
+                                    <img src="data:${photo.mimeType};base64,${photo.data}" alt="Photo ${idx + 1}" class="w-full h-24 object-cover">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const userText = `
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-white text-sm">New Case File Submitted</p>
+                    ${hasPhotos ? '<span class="text-xs bg-white/20 px-2 py-0.5 rounded">📷 With Photos</span>' : ''}
+                </div>
+                <ul class="list-none space-y-2 text-sm">
+                    ${data.metal_type ? `<li class="flex items-start gap-2"><span class="text-[#aaf386] font-medium">Metal:</span><span class="text-gray-100">${escapeHTML(data.metal_type)}</span></li>` : ''}
+                    ${data.service_time ? `<li class="flex items-start gap-2"><span class="text-[#aaf386] font-medium">Service Time:</span><span class="text-gray-100">${escapeHTML(data.service_time)}</span></li>` : ''}
+                    ${data.environment ? `<li class="flex items-start gap-2"><span class="text-[#aaf386] font-medium">Environment:</span><span class="text-gray-100">${escapeHTML(data.environment)}</span></li>` : ''}
+                    ${data.temperature ? `<li class="flex items-start gap-2"><span class="text-[#aaf386] font-medium">Temperature:</span><span class="text-gray-100">${escapeHTML(data.temperature)}</span></li>` : ''}
+                    ${data.mechanical_load ? `<li class="flex items-start gap-2"><span class="text-[#aaf386] font-medium">Load:</span><span class="text-gray-100">${escapeHTML(data.mechanical_load)}</span></li>` : ''}
+                    ${data.notes ? `<li class="flex items-start gap-2 mt-3 pt-3 border-t border-white/20"><span class="text-[#aaf386] font-medium">Notes:</span><span class="text-gray-100">${escapeHTML(data.notes)}</span></li>` : ''}
+                </ul>
+                ${photosSection}
+            `;
+            
+            userMessageDiv.innerHTML = `
+                <div class="bg-gradient-to-br from-[#012B1B] to-[#024a2f] text-white rounded-2xl p-5 max-w-lg shadow-xl border border-[#aaf386]/30 card-hover">
+                    ${userText}
+                </div>
+            `;
+            messageList.appendChild(userMessageDiv);
+            scrollToBottom();
+        }
+
+        /**
+         * Creates and displays the AI's message bubble with RAG context info.
+         */
+        function displayAiMessage(text, contextUsed = false, numSources = 0, reportAvailable = false) {
+            const aiMessageDiv = document.createElement('div');
+            aiMessageDiv.className = 'flex justify-start message-ai';
+            
+            // --- Convert Markdown to HTML ---
+            const formattedHtml = marked.parse(text, { gfm: true, breaks: true });
+
+            // Build header with RAG badge
+            let headerContent = '<p class="font-semibold text-[#aaf386] text-sm mb-2">Baseera\'s Analysis</p>';
+            
+            if (contextUsed && numSources > 0) {
+                headerContent += `
+                    <div class="flex items-center gap-2 mb-2 flex-wrap">
+                        <span class="rag-badge">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                            Knowledge Base: ${numSources} source${numSources > 1 ? 's' : ''} found
+                        </span>
+                    </div>
+                `;
+            } else {
+                headerContent += `
+                    <div class="mb-2">
+                        <span class="rag-badge" style="opacity: 0.5;">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            Limited context available
+                        </span>
+                    </div>
+                `;
+            }
+            
+            // Add download button if report is available
+            let downloadButton = '';
+            if (reportAvailable) {
+                downloadButton = `
+                    <div class="mt-4 pt-3 border-t border-gray-600/30">
+                        <button 
+                            onclick="downloadPDFReport()" 
+                            class="download-btn w-full bg-gradient-to-r from-[#aaf386] to-[#8dd870] hover:from-[#8dd870] hover:to-[#7bc85f] text-[#012B1B] font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download PDF Report
+                        </button>
+                    </div>
+                `;
+            }
+
+            aiMessageDiv.innerHTML = `
+                <div class="bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl p-5 max-w-lg shadow-xl border border-gray-600/30 card-hover">
+                    ${headerContent}
+                    <div class="text-sm mt-3 ai-message-content text-gray-200 leading-relaxed">${formattedHtml}</div>
+                    ${downloadButton}
+                </div>
+            `;
+            messageList.appendChild(aiMessageDiv);
+            
+            // --- Render Math (KaTeX) ---
+            renderMathInElement(aiMessageDiv, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+            
+            scrollToBottom();
+        }
+        
+        /**
+         * Downloads the PDF report for the last analysis.
+         */
+        async function downloadPDFReport() {
+            if (!lastReportData) {
+                alert('No report data available. Please run an analysis first.');
+                return;
+            }
+            
+            try {
+                // Show loading state
+                const downloadBtn = event.target.closest('button');
+                const originalText = downloadBtn.innerHTML;
+                downloadBtn.disabled = true;
+                downloadBtn.innerHTML = `
+                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Generating PDF...</span>
+                `;
+                
+                // Send request to generate PDF
+                const response = await fetch('/api/generate-pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(lastReportData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to generate PDF');
+                }
+                
+                // Get PDF blob and trigger download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                // Generate filename
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                const metalType = lastReportData.failure_data.metal_type || 'Unknown';
+                a.download = `Baseera_Failure_Analysis_${metalType.replace(/\s+/g, '_')}_${timestamp}.pdf`;
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                // Reset button
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = originalText;
+                
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+                alert(`Failed to download PDF: ${error.message}`);
+                
+                // Reset button on error
+                const downloadBtn = event.target.closest('button');
+                if (downloadBtn) {
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Download PDF Report
+                    `;
+                }
+            }
+        }
+        
+        // Make download function available globally
+        window.downloadPDFReport = downloadPDFReport;
+
+        /**
+         * Displays the "Analyzing..." loading bubble with RAG steps.
+         */
+        function displayLoadingMessage() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'flex justify-start loading-indicator';
+            loadingDiv.innerHTML = `
+                <div class="bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl p-5 max-w-sm shadow-xl border border-gray-600/30">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-[#012B1B] to-[#024a2f] rounded-full flex items-center justify-center pulse">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-semibold text-[#aaf386]">Analyzing Failure Case</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="loading-step active" id="step-rag">
+                            <span class="spinner"></span>
+                            <span>Searching knowledge base...</span>
+                        </div>
+                        <div class="loading-step" id="step-ai">
+                            <span style="width: 12px; height: 12px; display: inline-block;"></span>
+                            <span>Generating analysis...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            messageList.appendChild(loadingDiv);
+            scrollToBottom();
+            
+            // Simulate progress updates
+            setTimeout(() => {
+                const ragStep = loadingDiv.querySelector('#step-rag');
+                const aiStep = loadingDiv.querySelector('#step-ai');
+                if (ragStep && aiStep) {
+                    ragStep.classList.remove('active');
+                    ragStep.classList.add('completed');
+                    const ragText = ragStep.querySelectorAll('span')[1];
+                    if (ragText) ragText.textContent = '✓ Knowledge base searched';
+                    
+                    aiStep.classList.add('active');
+                    const aiSpinner = aiStep.querySelector('span');
+                    if (aiSpinner) aiSpinner.innerHTML = '<span class="spinner"></span>';
+                }
+            }, 800);
+            
+            return loadingDiv;
+        }
+
+        /**
+         * Scrolls the message list to the bottom.
+         */
+        function scrollToBottom() {
+            messageList.scrollTop = messageList.scrollHeight;
+        }
+
+        /**
+         * Sanitizes text to prevent XSS. (Only for user messages)
+         */
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function(match) {
+                return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+                }[match];
+            });
+        }
+
+    </script>
+
+</body>
+</html>

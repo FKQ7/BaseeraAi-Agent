@@ -1,0 +1,55 @@
+{
+  "summary": {
+    "total_tests": 5,
+    "successful_tests": 0,
+    "failed_tests": 5,
+    "average_accuracy": 0,
+    "average_sources": 0,
+    "average_response_time_ms": 0,
+    "primary_mode_accuracy": 0,
+    "total_evaluation_time_seconds": 10.4,
+    "timestamp": "2025-11-12T23:41:42.864072"
+  },
+  "results": [
+    {
+      "test_name": "Stress Corrosion Cracking (SCC)",
+      "test_number": 1,
+      "success": false,
+      "error": "HTTP 403: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"robots\" content=\"NONE,NOARCHIVE\">\n  <title>403 Forbidden</title>\n  <style>\n ",
+      "accuracy_score": 0,
+      "evaluation": {}
+    },
+    {
+      "test_name": "Fatigue Failure",
+      "test_number": 2,
+      "success": false,
+      "error": "HTTP 403: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"robots\" content=\"NONE,NOARCHIVE\">\n  <title>403 Forbidden</title>\n  <style>\n ",
+      "accuracy_score": 0,
+      "evaluation": {}
+    },
+    {
+      "test_name": "High-Temperature Creep",
+      "test_number": 3,
+      "success": false,
+      "error": "HTTP 403: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"robots\" content=\"NONE,NOARCHIVE\">\n  <title>403 Forbidden</title>\n  <style>\n ",
+      "accuracy_score": 0,
+      "evaluation": {}
+    },
+    {
+      "test_name": "Pitting Corrosion",
+      "test_number": 4,
+      "success": false,
+      "error": "HTTP 403: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"robots\" content=\"NONE,NOARCHIVE\">\n  <title>403 Forbidden</title>\n  <style>\n ",
+      "accuracy_score": 0,
+      "evaluation": {}
+    },
+    {
+      "test_name": "Hydrogen Embrittlement",
+      "test_number": 5,
+      "success": false,
+      "error": "HTTP 403: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"robots\" content=\"NONE,NOARCHIVE\">\n  <title>403 Forbidden</title>\n  <style>\n ",
+      "accuracy_score": 0,
+      "evaluation": {}
+    }
+  ]
+}

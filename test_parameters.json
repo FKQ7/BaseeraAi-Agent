@@ -1,0 +1,205 @@
+{
+  "test_cases": [
+    {
+      "name": "Stress Corrosion Cracking (SCC)",
+      "description": "Common failure in stainless steel in chloride environments",
+      "parameters": {
+        "metal_type": "316L Stainless Steel",
+        "service_time": "3 years",
+        "environment": "High-chloride environment, coastal atmosphere",
+        "temperature": "60-80°C",
+        "mechanical_load": "Static with residual stress",
+        "notes": "Cracks observed in weld heat-affected zone. Intergranular cracking pattern. Component exposed to salt spray.",
+        "photos": ["test_images/scc_cracks.jpg"]
+      }
+    },
+    {
+      "name": "Fatigue Failure",
+      "description": "Cyclic loading failure with beach marks",
+      "parameters": {
+        "metal_type": "Carbon Steel A36",
+        "service_time": "8 years",
+        "environment": "Atmospheric, industrial",
+        "temperature": "Ambient (20-30°C)",
+        "mechanical_load": "Cyclic loading, high frequency vibrations",
+        "notes": "Beach marks visible on fracture surface. Failure at stress concentration point (hole). Component subject to rotating machinery vibrations.",
+        "photos": ["test_images/fatigue_beach_marks.jpg"]
+      }
+    },
+    {
+      "name": "High-Temperature Creep",
+      "description": "Creep deformation at elevated temperature",
+      "parameters": {
+        "metal_type": "Inconel 625",
+        "service_time": "12 years",
+        "environment": "High-temperature flue gas, oxidizing atmosphere",
+        "temperature": "800-900°C",
+        "mechanical_load": "Constant tensile stress",
+        "notes": "Gradual deformation over time. Grain boundary separation. Used in furnace application.",
+        "photos": ["test_images/creep_deformation.jpg"]
+      }
+    },
+    {
+      "name": "Pitting Corrosion",
+      "description": "Localized pitting in chloride environment",
+      "parameters": {
+        "metal_type": "304 Stainless Steel",
+        "service_time": "2 years",
+        "environment": "Chloride-containing water, stagnant conditions",
+        "temperature": "40-50°C",
+        "mechanical_load": "Low, primarily static",
+        "notes": "Localized pitting observed. Deep pits with small surface openings. Component in water storage tank.",
+        "photos": ["test_images/pitting_corrosion.jpg"]
+      }
+    },
+    {
+      "name": "Hydrogen Embrittlement",
+      "description": "Brittle fracture from hydrogen exposure",
+      "parameters": {
+        "metal_type": "High-Strength Steel (AISI 4340)",
+        "service_time": "5 years",
+        "environment": "Acidic environment, hydrogen sulfide present",
+        "temperature": "50-70°C",
+        "mechanical_load": "High tensile stress",
+        "notes": "Brittle fracture with no plastic deformation. Delayed failure after exposure. Used in sour gas service.",
+        "photos": ["test_images/hydrogen_embrittlement.jpg"]
+      }
+    },
+    {
+      "name": "Erosive Wear",
+      "description": "Material loss from particle impact",
+      "parameters": {
+        "metal_type": "Carbon Steel",
+        "service_time": "6 years",
+        "environment": "Abrasive particles in gas stream",
+        "temperature": "200-300°C",
+        "mechanical_load": "High velocity particle impact",
+        "notes": "Material loss on exposed surfaces. Smooth, polished appearance. Used in cyclone separator.",
+        "photos": ["test_images/erosion_wear.jpg"]
+      }
+    },
+    {
+      "name": "Intergranular Corrosion",
+      "description": "Grain boundary attack in sensitized stainless steel",
+      "parameters": {
+        "metal_type": "304 Stainless Steel",
+        "service_time": "4 years",
+        "environment": "Acidic environment, oxidizing conditions",
+        "temperature": "400-600°C (sensitization temperature range)",
+        "mechanical_load": "Low stress",
+        "notes": "Grain boundary attack. Material appears sound but loses strength. Weldment area affected."
+      }
+    },
+    {
+      "name": "Thermal Fatigue",
+      "description": "Cracking from thermal cycling",
+      "parameters": {
+        "metal_type": "Cast Iron",
+        "service_time": "10 years",
+        "environment": "Cyclic heating and cooling",
+        "temperature": "20-500°C (cyclic)",
+        "mechanical_load": "Thermal stress from expansion/contraction",
+        "notes": "Cracks initiating from surface. Thermal cycling in furnace application. Multiple crack origins.",
+        "photos": ["test_images/thermal_fatigue.jpg"]
+      }
+    },
+    {
+      "name": "Galvanic Corrosion",
+      "description": "Accelerated corrosion from dissimilar metals",
+      "parameters": {
+        "metal_type": "Aluminum 6061",
+        "service_time": "3 years",
+        "environment": "Marine atmosphere, salt water exposure",
+        "temperature": "Ambient",
+        "mechanical_load": "Low",
+        "notes": "Accelerated corrosion where aluminum contacts stainless steel fasteners. Localized attack at contact points."
+      }
+    },
+    {
+      "name": "Brittle Fracture",
+      "description": "Low-temperature brittle failure",
+      "parameters": {
+        "metal_type": "Carbon Steel",
+        "service_time": "15 years",
+        "environment": "Low temperature service",
+        "temperature": "-20°C",
+        "mechanical_load": "Impact loading",
+        "notes": "Cleavage fracture surface. No plastic deformation. Failure occurred during cold weather operation.",
+        "photos": ["test_images/brittle_fracture.jpg"]
+      }
+    },
+    {
+      "name": "Fretting Wear",
+      "description": "Wear from small amplitude motion",
+      "parameters": {
+        "metal_type": "Stainless Steel 316",
+        "service_time": "7 years",
+        "environment": "Atmospheric, with vibration",
+        "temperature": "Ambient",
+        "mechanical_load": "Small amplitude oscillatory motion",
+        "notes": "Wear at contact interface between two components. Oxide debris present. Bolted joint application."
+      }
+    },
+    {
+      "name": "Stress-Corrosion Cracking (Chloride)",
+      "description": "SCC in duplex stainless steel",
+      "parameters": {
+        "metal_type": "Duplex Stainless Steel 2205",
+        "service_time": "4 years",
+        "environment": "Chloride-containing process fluid",
+        "temperature": "70-90°C",
+        "mechanical_load": "Residual stress from welding",
+        "notes": "Transgranular cracking. Branching cracks. Failure in heat exchanger tube."
+      }
+    },
+    {
+      "name": "Liquid Droplet Impingement Erosion",
+      "description": "Erosion from high-velocity droplets",
+      "parameters": {
+        "metal_type": "Titanium Grade 2",
+        "service_time": "9 years",
+        "environment": "High-velocity liquid droplets",
+        "temperature": "100-150°C",
+        "mechanical_load": "Erosive impact from droplets",
+        "notes": "Material removal in specific pattern. Used in steam turbine application. Erosion at blade leading edges."
+      }
+    },
+    {
+      "name": "Oxidation at High Temperature",
+      "description": "High-temperature oxidation and spallation",
+      "parameters": {
+        "metal_type": "Nickel-based Superalloy",
+        "service_time": "6 years",
+        "environment": "Oxidizing atmosphere at high temperature",
+        "temperature": "1000-1100°C",
+        "mechanical_load": "Thermal cycling",
+        "notes": "Oxide scale formation. Spallation of oxide layer. Used in gas turbine application."
+      }
+    },
+    {
+      "name": "Limited Context Test",
+      "description": "Test with minimal information - should still work",
+      "parameters": {
+        "metal_type": "Unusual Alloy XYZ-123",
+        "service_time": "1 month",
+        "environment": "Unknown",
+        "temperature": "Unknown",
+        "mechanical_load": "Unknown",
+        "notes": "Failure occurred but limited information available."
+      }
+    }
+  ],
+  "quick_test": {
+    "name": "Quick Test - Stress Corrosion Cracking",
+    "parameters": {
+      "metal_type": "316L Stainless Steel",
+      "service_time": "3 years",
+      "environment": "High-chloride environment, coastal atmosphere",
+      "temperature": "60-80°C",
+      "mechanical_load": "Static with residual stress",
+      "notes": "Cracks observed in weld heat-affected zone. Intergranular cracking pattern.",
+      "photos": ["test_images/scc_cracks.jpg"]
+    }
+  }
+}
+
